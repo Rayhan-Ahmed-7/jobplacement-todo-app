@@ -4,7 +4,7 @@ import { AiFillPlusCircle } from 'react-icons/ai';
 import Todo from './Todo';
 const TodoForm = () => {
     const [todos, setTodos] = useState([]);
-    const [refetch,setRefetch] = useState(false);
+    const [refetch, setRefetch] = useState(false);
     useEffect(() => {
         fetch('http://localhost:5000/todos')
             .then(res => res.json())
@@ -13,7 +13,7 @@ const TodoForm = () => {
                 setTodos(data);
             })
     }, [refetch]);
-    const handleForm = (e)=>{
+    const handleForm = (e) => {
         e.preventDefault();
         const title = e.target.title.value;
         const description = e.target.description.value;
@@ -21,43 +21,60 @@ const TodoForm = () => {
             title,
             description
         }
-        if(title || description){
+        if (title || description) {
             const loading = toast.loading('loading...')
-            fetch('http://localhost:5000/todos',{
-                method:'POST',
-                headers:{
-                    'content-type':'application/json'
+            fetch('http://localhost:5000/todos', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
                 },
-                body:JSON.stringify(todo)
+                body: JSON.stringify(todo)
             })
-            .then(res=>res.json())
-            .then(data=>{
-                console.log(data);
-                toast.dismiss(loading);
-                toast.success('Successfully added!');
-                e.target.reset()
-                setRefetch(!refetch);
-            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    toast.dismiss(loading);
+                    toast.success('Successfully added!');
+                    e.target.reset()
+                    setRefetch(!refetch);
+                })
         }
-        console.log(todo);
+        //console.log(todo);
     }
-    
+    //handle delete
+    const handleDelete = (id) => {
+        const sure = window.confirm('are you sure..?');
+        if (sure) {
+            const deleteLoading = toast.loading('deleting...');
+            fetch(`http://localhost:5000/todos/${id}`, {
+                method: 'DELETE'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.deletedCount){
+                        toast.dismiss(deleteLoading);
+                        toast.success('Successfully deleted!');
+                        setRefetch(!refetch);
+                    }
+                })
+        }
+    }
     return (
         <>
-        <div className='w-full flex justify-center mt-10'>
-            <form action="" onSubmit={handleForm} className='p-4 flex-1 max-w-md bg-white  shadow-2xl rounded-xl'>
-                <input className='block w-full border-b-2 outline-none focus-within:border-b-rose-500 mt-4 bg-transparent' type="text" name="title" placeholder='Add Title' required/>
-                <textarea className='block w-full border-b-2 outline-none focus-within:border-b-rose-500 mt-4 bg-transparent' name="description" placeholder='Add description' required/>
-                <div className="flex justify-end">
-                <button className='block mt-4' type='submit'><AiFillPlusCircle className='text-rose-500 text-4xl'/></button>
-                </div>
-            </form>
-        </div>
-        <div className='w-10/12 mx-auto grid lg:grid-cols-3 grid-cols-1 gap-10 my-10'>
-            {
-                todos.map(todo=><Todo key={todo._id} todo={todo}></Todo>)
-            }
-        </div>
+            <div className='w-full flex justify-center mt-10'>
+                <form action="" onSubmit={handleForm} className='p-4 flex-1 max-w-md bg-white  shadow-2xl rounded-xl'>
+                    <input className='block w-full border-b-2 outline-none focus-within:border-b-rose-500 mt-4 bg-transparent' type="text" name="title" placeholder='Add Title' required />
+                    <textarea className='block w-full border-b-2 outline-none focus-within:border-b-rose-500 mt-4 bg-transparent' name="description" placeholder='Add description' required />
+                    <div className="flex justify-end">
+                        <button className='block mt-4' type='submit'><AiFillPlusCircle className='text-rose-500 text-4xl' /></button>
+                    </div>
+                </form>
+            </div>
+            <div className='w-10/12 mx-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-10 my-10'>
+                {
+                    todos.map(todo => <Todo key={todo._id} todo={todo} handleDelete={handleDelete}></Todo>)
+                }
+            </div>
         </>
     );
 };
