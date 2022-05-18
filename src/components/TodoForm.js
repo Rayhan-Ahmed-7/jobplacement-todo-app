@@ -6,7 +6,7 @@ const TodoForm = () => {
     const [todos, setTodos] = useState([]);
     const [refetch, setRefetch] = useState(false);
     useEffect(() => {
-        fetch('http://localhost:5000/todos')
+        fetch('https://morning-atoll-26204.herokuapp.com/todos')
             .then(res => res.json())
             .then(data => {
                 console.log(data);
@@ -23,7 +23,7 @@ const TodoForm = () => {
         }
         if (title || description) {
             const loading = toast.loading('loading...')
-            fetch('http://localhost:5000/todos', {
+            fetch('https://morning-atoll-26204.herokuapp.com/todos', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -46,7 +46,7 @@ const TodoForm = () => {
         const sure = window.confirm('are you sure..?');
         if (sure) {
             const deleteLoading = toast.loading('deleting...');
-            fetch(`http://localhost:5000/todos/${id}`, {
+            fetch(`https://morning-atoll-26204.herokuapp.com/todos/${id}`, {
                 method: 'DELETE'
             })
                 .then(res => res.json())
@@ -59,6 +59,12 @@ const TodoForm = () => {
                 })
         }
     }
+    const colors = [
+        'bg-gradient-to-br from-[#FD89AC] to-[#F55585]',
+        'bg-gradient-to-br from-[#FFD09A] to-[#FFA944]',
+        'bg-gradient-to-br from-[#A490F3] to-[#927EFB]',
+        'bg-gradient-to-br from-[#85E3FD] to-[#46C6EB]'
+    ];
     return (
         <>
             <div className='w-full flex justify-center mt-10'>
@@ -72,7 +78,7 @@ const TodoForm = () => {
             </div>
             <div className='w-10/12 mx-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-10 my-10'>
                 {
-                    todos.map(todo => <Todo key={todo._id} todo={todo} handleDelete={handleDelete}></Todo>)
+                    todos.map(todo => <Todo key={todo._id} todo={todo} handleDelete={handleDelete} colors={colors}></Todo>)
                 }
             </div>
         </>
